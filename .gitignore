@@ -1,0 +1,10 @@
+.env
+node_modules
+Procfile
+startup.bat
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
