@@ -167,8 +167,10 @@ class MusicService {
 
 		// Validate song url
 		if (ytdl.validateURL(input)) {
-			const vidId = ytdl.getURLVideoID(input);
-			const video = await videoFinder(vidId);
+			// REVIEW: play song with url links issues
+			const videoDetails = (await ytdl.getBasicInfo(input)).videoDetails;
+			// const vidId = ytdl.getURLVideoID(input);
+			const video = await videoFinder(videoDetails.title);
 			const embed = this.pushOneSong(video, textChannel, guildMember);
 			return embed;
 		} else if (!!playListId) {
