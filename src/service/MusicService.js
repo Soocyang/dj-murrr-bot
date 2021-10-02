@@ -3,20 +3,36 @@ const {
 	joinVoiceChannel,
 	createAudioPlayer,
 	createAudioResource,
+	entersState,
+	demuxProbe,
+	VoiceConnectionStatus,
 	AudioPlayerStatus,
 	NoSubscriberBehavior,
 } = require("@discordjs/voice");
 const ytdl = require("ytdl-core");
+const ytdlExec = require("youtube-dl-exec").raw;
 const ytSearch = require("yt-search");
+const ytsr = require("ytsr");
 const randomColor = require("randomcolor");
 
 const Song = require("../classes/Song.js");
 
-let streamOptions = {
-	seek: 0,
-	volume: 0.5,
-	highWaterMark: 1,
+//subfunction for searching yt video
+const videoFinder = async (query) => {
+	/*** using yt-search ***/
+	// const vidResult = await ytSearch(query);
+	// return vidResult.items.length > 1 ? vidResult.items[0] : null;
+
+	/*** using ytsr ***/
+	const vidResult = await ytsr(query, { limit: 1 });
+	return vidResult.items.length > 0 ? vidResult.items[0] : null;
 };
+
+// let streamOptions = {
+// 	seek: 0,
+// 	volume: 0.5,
+// 	highWaterMark: 1,
+// };
 
 let timeoutDisconnect;
 let timeoutBreak;
@@ -56,11 +72,25 @@ class MusicService {
 		clearTimeout(timeoutDisconnect);
 
 		const currentTrack = this.songQueue[this.currentTrackIndex];
-		const stream = ytdl(currentTrack.url, {
-			filter: "audio",
-			quality: "highestaudio",
-			highWaterMark: 1 << 25,
-		});
+
+		/*** NEWER ***/
+		// const stream = ytdlExec(
+		// 	currentTrack.url,
+		// 	{
+		// 		o: "-",
+		// 		q: "",
+		// 		f: "bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio",
+		// 		r: "100K",
+		// 	},
+		// 	{ stdio: ["ignore", "pipe", "ignore"] }
+		// );
+
+		/*** OLD ***/
+		// const stream = ytdl(currentTrack.url, {
+		// 	filter: "audio",
+		// 	quality: "highestaudio",
+		// 	highWaterMark: 1 << 25,
+		// });
 
 		this.player = createAudioPlayer({
 			behaviors: {
@@ -68,11 +98,25 @@ class MusicService {
 			},
 		});
 
-		const resource = createAudioResource(stream, streamOptions);
+		/**
+		 * With Newer
+		 */
+		// const resource = createAudioResource(stream.stdout);
+
+		/*** LATEST ***/
+		const resource = await this.createAudioResource(currentTrack);
 		this.player.play(resource);
 
 		// Subscribe to player
-		this.dispatcher = this.connection.subscribe(this.player);
+
+		try {
+			await entersState(this.connection, VoiceConnectionStatus.Ready, 30_000);
+			this.dispatcher = this.connection.subscribe(this.player);
+		} catch (error) {
+			connection.destroy();
+			textChannel.send("Error joining voice channel, please try again!");
+			console.log(error);
+		}
 
 		// Loop flag true skip sending embed.
 		if (!this.loopFlag) {
@@ -118,16 +162,20 @@ class MusicService {
 	async addSongToQueue(textChannel, input, guildMember) {
 		clearTimeout(timeoutDisconnect);
 
-		let songUrl;
+		// let songUrl;
 		const playListId = this.validatePlaylistURL(input);
 
 		// Validate song url
 		if (ytdl.validateURL(input)) {
-			songUrl = input;
-			const embed = this.pushOneSong(songUrl, textChannel, guildMember);
+			const vidId = ytdl.getURLVideoID(input);
+			const video = await videoFinder(vidId);
+			const embed = this.pushOneSong(video, textChannel, guildMember);
 			return embed;
 		} else if (!!playListId) {
 			try {
+				// const filters1 = await ytsr.getFilters(input);
+				// const filter1 = filters1.get("Type").get("Playlist");
+				// console.log(testPlaylist);
 				const playList = await ytSearch({ listId: playListId });
 				const embed = this.queuePlaylist(textChannel, playList, guildMember);
 				return embed;
@@ -136,17 +184,12 @@ class MusicService {
 				return "**⚠ Error! Song or Playlist Not Found!**";
 			}
 		} else {
-			//subfunction for searching yt video
-			const videoFinder = async (query) => {
-				const vidResult = await ytSearch(query);
-				return vidResult.videos.length > 1 ? vidResult.videos[0] : null;
-			};
 			const video = await videoFinder(input);
 			if (!video) {
 				return "**⚠ Error! Song or Playlist Not Found!**";
 			}
-			songUrl = video.url;
-			const embed = this.pushOneSong(songUrl, textChannel, guildMember);
+			// songUrl = video.url;
+			const embed = this.pushOneSong(video, textChannel, guildMember);
 			return embed;
 		}
 	}
@@ -478,7 +521,7 @@ class MusicService {
 		this.loopFlag = false;
 		this.loopQueueFlag = false;
 		this.isPlaying = false;
-		streamOptions.volume = 0.5;
+		// streamOptions.volume = 0.5;
 
 		return "**📤 Player Disconnected**";
 	}
@@ -533,21 +576,29 @@ class MusicService {
 		}
 	}
 
-	async pushOneSong(songUrl, textChannel, guildMember) {
+	// async pushOneSong(songUrl, textChannel, guildMember) {
+	async pushOneSong(songDetails, textChannel, guildMember) {
 		let song;
 		try {
 			// Get Song details
-			const songDetails = (await ytdl.getBasicInfo(songUrl)).videoDetails;
-			const songLength = parseInt(songDetails.lengthSeconds);
-			const songDuration = this.secondsToHms(songLength);
+			// const songDetails = (await ytdl.getBasicInfo(video.url)).videoDetails;
+
+			const durationInMMSS = songDetails.duration.split(":");
+			const songLength =
+				durationInMMSS.length > 1
+					? parseInt(durationInMMSS[0]) * 60 + parseInt(durationInMMSS[1])
+					: 0;
+
+			// const songLength = parseInt(songDetails.lengthSeconds);
+			// const songDuration = this.secondsToHms(songLength);
 
 			song = new Song(
 				songDetails.title,
-				songUrl,
-				songDuration,
+				songDetails.url,
+				songDetails.duration,
 				songLength,
 				songDetails.author.name,
-				songDetails.thumbnails[1].url,
+				songDetails.bestThumbnail.url,
 				`${guildMember.nickname || ""}(${guildMember.user.username})`,
 				guildMember.user.avatarURL() ||
 					`https://cdn.discordapp.com/embed/avatars/${Math.floor(Math.random() * 6)}.png`
@@ -646,15 +697,15 @@ class MusicService {
 		this.latestCmd = "";
 	}
 
-	volumeControl() {
-		this.latestCmd = "volume";
-		streamOptions.volume;
+	// volumeControl() {
+	// 	this.latestCmd = "volume";
+	// 	streamOptions.volume;
 
-		const embed = new Discord.MessageEmbed()
-			.setColor(randomColor())
-			.setTitle(`Current Volume: \`${streamOptions.volume * 100}\`%`);
-		return embed;
-	}
+	// 	const embed = new Discord.MessageEmbed()
+	// 		.setColor(randomColor())
+	// 		.setTitle(`Current Volume: \`${streamOptions.volume * 100}\`%`);
+	// 	return embed;
+	// }
 
 	async handleVolumeControlReaction(message) {
 		// ClearTimeout for remove reaction of vol control.
@@ -682,29 +733,29 @@ class MusicService {
 		this.latestCmd = "";
 	}
 
-	handleVolumeChange(reaction) {
-		if (reaction.message.id === this.volumeControlEmbedId) {
-			if (reaction.emoji.name === "🔉") {
-				if (streamOptions.volume === 0.1) return;
-				streamOptions.volume = Math.round((streamOptions.volume - 0.1) * 10) / 10;
-			}
-			if (reaction.emoji.name === "🔊") {
-				if (streamOptions.volume === 1) return;
-				streamOptions.volume = Math.round((streamOptions.volume + 0.1) * 10) / 10;
-			}
+	// handleVolumeChange(reaction) {
+	// 	if (reaction.message.id === this.volumeControlEmbedId) {
+	// 		if (reaction.emoji.name === "🔉") {
+	// 			if (streamOptions.volume === 0.1) return;
+	// 			streamOptions.volume = Math.round((streamOptions.volume - 0.1) * 10) / 10;
+	// 		}
+	// 		if (reaction.emoji.name === "🔊") {
+	// 			if (streamOptions.volume === 1) return;
+	// 			streamOptions.volume = Math.round((streamOptions.volume + 0.1) * 10) / 10;
+	// 		}
 
-			// Set volume
-			this.dispatcher.setVolume(streamOptions.volume);
+	// 		// Set volume
+	// 		this.dispatcher.setVolume(streamOptions.volume);
 
-			// Retrieve message embed
-			const retrievedEmbed = reaction.message.embeds[0];
-			const editedEmbed = new Discord.MessageEmbed(retrievedEmbed).setTitle(
-				`Current Volume: \`${Math.round(streamOptions.volume * 100)}\`%`
-			);
+	// 		// Retrieve message embed
+	// 		const retrievedEmbed = reaction.message.embeds[0];
+	// 		const editedEmbed = new Discord.MessageEmbed(retrievedEmbed).setTitle(
+	// 			`Current Volume: \`${Math.round(streamOptions.volume * 100)}\`%`
+	// 		);
 
-			reaction.message.edit(editedEmbed);
-		}
-	}
+	// 		reaction.message.edit(editedEmbed);
+	// 	}
+	// }
 
 	validatePlaylistURL(url) {
 		var regExp = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
@@ -743,6 +794,45 @@ class MusicService {
 		}
 
 		return array;
+	}
+
+	async createAudioResource(currentTrack) {
+		return new Promise((resolve, reject) => {
+			const process = ytdlExec(
+				currentTrack.url,
+				{
+					o: "-",
+					q: "",
+					f: "bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio",
+					r: "100K",
+				},
+				{ stdio: ["ignore", "pipe", "ignore"] }
+			);
+			if (!process.stdout) {
+				reject(new Error("No stdout"));
+				return;
+			}
+			const stream = process.stdout;
+			const onError = (error) => {
+				if (!process.killed) process.kill();
+				stream.resume();
+				reject(error);
+			};
+			process
+				.once("spawn", () => {
+					demuxProbe(stream)
+						.then((probe) =>
+							resolve(
+								createAudioResource(probe.stream, {
+									metadata: this,
+									inputType: probe.type,
+								})
+							)
+						)
+						.catch(onError);
+				})
+				.catch(onError);
+		});
 	}
 }
 

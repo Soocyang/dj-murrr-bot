@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const bot = require("../index.js");
+const { version } = require("../../package.json");
 //
 const getEmbed = async (client) => {
 	const user = await client.users.cache.find((user) => user.id === process.env.MY_USER_ID);
@@ -92,7 +92,7 @@ const getEmbed = async (client) => {
 		// .setImage(
 		// 	"https://media.discordapp.net/attachments/846048517830606868/890878385641889822/ezgif.com-gif-maker.gif"
 		// )
-		.setFooter(`By Murrr | Default prefix: ${bot.botPrefix}`, `${user.displayAvatarURL()}`);
+		.setFooter(`Version: v${version} | By Murrr`, `${user.displayAvatarURL()}`);
 
 	return embed;
 };

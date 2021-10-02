@@ -21,7 +21,7 @@ const client = new Client({
 });
 
 let musicPlayer = new MusicService();
-let botPrefix = "--";
+let botPrefix = "=";
 
 module.exports = {
 	musicPlayer: musicPlayer,
@@ -30,7 +30,7 @@ module.exports = {
 
 client.once("ready", async () => {
 	console.log("DJ MURRR is Online!");
-	client.user.setActivity(`--help`, { type: "PLAYING" });
+	client.user.setActivity(`=help`, { type: "PLAYING" });
 
 	new WOKCommands(client, {
 		commandsDir: path.join(__dirname, "commands"),
