@@ -29,7 +29,7 @@ module.exports = {
 };
 
 client.once("ready", async () => {
-	console.log("DJ MURRR is Online!");
+	console.log("Hutaooo is Online!");
 	client.user.setActivity(`=help`, { type: "PLAYING" });
 
 	new WOKCommands(client, {
