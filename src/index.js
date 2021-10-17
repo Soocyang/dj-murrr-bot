@@ -21,7 +21,7 @@ const client = new Client({
 })
 
 let musicPlayer = new MusicService()
-let botPrefix = '--'
+let botPrefix = process.env.PREFIX
 
 module.exports = {
 	musicPlayer: musicPlayer,
