@@ -34,7 +34,7 @@ client.once('ready', async () => {
 
 	new WOKCommands(client, {
 		commandsDir: path.join(__dirname, 'commands'),
-		testServers: [process.env.GUILD_ID],
+		testServers: [process.env.GUILD_ID, process.env.GUILD_ID2],
 		showWarns: false,
 	})
 		.setDefaultPrefix(botPrefix)
