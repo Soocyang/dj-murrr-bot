@@ -11,13 +11,13 @@ module.exports = {
 		message, // The DJS message object
 		client, // Your bot's client object
 		interaction,
-		// channel, // The DJS channel object
+		channel, // The DJS channel object
 		// args, // An array of arguments without the command prefix/name
 		// text, // A joined string of the above arguments
 		// prefix, // The prefix used to run this command
 		// instance, // Your WOKCommands instance
 	}) => {
-		const guildInfo = message.channel.guild;
+		const guildInfo = channel.guild;
 		const connection = getVoiceConnection(guildInfo.id);
 		const RTCLatency = connection ? connection.ping.udp : "";
 		const djsApiPing = client.ws.ping;
