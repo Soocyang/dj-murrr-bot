@@ -2,7 +2,14 @@ require('dotenv').config()
 const { Client, Intents } = require('discord.js')
 const WOKCommands = require('wokcommands')
 const path = require('path')
+const mongoose = require('mongoose')
+
 const MusicService = require('./service/MusicService.js')
+
+mongoose.connect(process.env.MONGO_URI, { keepAlive: true, keepAliveInitialDelay: 300000 }).then(
+	() => console.log('Connected to DB!'),
+	(err) => console.log(err)
+)
 
 const client = new Client({
 	// intents
