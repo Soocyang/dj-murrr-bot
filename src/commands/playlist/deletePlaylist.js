@@ -28,9 +28,9 @@ module.exports = {
 				console.log(
 					err
 						? err
-						: `Queue ${doc.title}:${
-								doc.author_id
-						  } deleted at ${new Date(Date.now()).toLocaleString()}`
+						: `Queue ${doc.title}:${doc.author_id} deleted at ${new Date(
+								Date.now()
+						  ).toLocaleString()}`
 				)
 			})
 

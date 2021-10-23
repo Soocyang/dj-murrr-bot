@@ -1,39 +1,39 @@
 class Song {
 	constructor(title, url, duration, length, author, thumbail, username, avatar) {
-		this.title = title;
-		this.url = url;
-		this.duration = duration;
-		this.length = length;
-		this.author = author;
-		this.thumbail = thumbail;
-		this.username = username;
-		this.userpic = avatar;
+		this.title = title
+		this.url = url
+		this.duration = duration
+		this.length = length
+		this.author = author
+		this.thumbail = thumbail
+		this.username = username
+		this.userpic = avatar
 	}
 
 	setTitle() {
-		this.title = title;
+		this.title = title
 	}
 	setUrl() {
-		this.url = url;
+		this.url = url
 	}
 	setDuration() {
-		this.duration = duration;
+		this.duration = duration
 	}
 	setLength() {
-		this.length = length;
+		this.length = length
 	}
 	setAuthor() {
-		this.author = author;
+		this.author = author
 	}
 	setThumbail() {
-		this.thumbail = thumbail;
+		this.thumbail = thumbail
 	}
 	setUsername() {
-		this.username = username;
+		this.username = username
 	}
 	setAvatar() {
-		this.avatar = avatar;
+		this.avatar = avatar
 	}
 }
 
-module.exports = Song;
+module.exports = Song
