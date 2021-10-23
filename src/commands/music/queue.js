@@ -46,10 +46,6 @@ module.exports = {
 
 		if (!voiceChannel) return 'You need to be in a voice channel to execute this command!'
 		if (!musicPlayer.connection) return 'DJ Murrr is not playing music in the server right now'
-		const voiceChannelId = musicPlayer.connection.packets.state.channel_id
-		if (voiceChannel.id !== voiceChannelId) {
-			return `You need to be in the same voice channel <#${voiceChannelId}> as <@${client.user.id}> to use this command!`
-		}
 
 		// Queue function here
 		const res = musicPlayer.getQueue(guildInfo, textChannel)
