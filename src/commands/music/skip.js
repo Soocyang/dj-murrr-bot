@@ -1,25 +1,29 @@
-const bot = require("../index.js");
+const Discord = require("discord.js");
+const bot = require("../../index.js");
 const musicPlayer = bot.musicPlayer;
 
 module.exports = {
 	slash: "both",
 	testOnly: true,
-	name: "loop",
-	aliases: ['lo'],
+	name: "skip",
+	aliases: ['s'],
 	category: "Music",
-	description: "Toggle loop for currently playing song",
+	description: "Skip currently playing song",
 	callback: ({ message, channel, client, guild, member }) => {
 		let guildMember;
+		let user;
 		let voiceChannel;
 		let textChannel;
 
 		if (message) {
 			const guildInfo = message.channel.guild;
 			guildMember = guildInfo.members.cache.find((user) => user.id === message.author.id);
+			user = message.author;
 			voiceChannel = guildMember.voice.channel;
 			textChannel = message.channel;
 		} else {
 			guildMember = guild.members.cache.find((user) => user.id === member.user.id);
+			user = new Discord.User(client, guildMember.user);
 			voiceChannel = guildMember.voice.channel;
 			textChannel = channel;
 		}
@@ -29,11 +33,10 @@ module.exports = {
 		if (voiceChannel.id !== musicPlayer.connection.packets.state.channel_id) {
 			return `You need to be in the same voice channel <#${musicPlayer.connection.packets.state.channel_id}> as <@${client.user.id}> to use this command!`;
 		}
-
-		let response = musicPlayer.loop();
+		let response = musicPlayer.skip(textChannel);
 
 		// if (message) {
-		// 	message.reply(response);
+		// 	message.react("⏭");
 		// }
 
 		return response;

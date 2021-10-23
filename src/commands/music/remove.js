@@ -1,29 +1,28 @@
-const Discord = require("discord.js");
-const bot = require("../index.js");
+const bot = require("../../index.js");
 const musicPlayer = bot.musicPlayer;
 
 module.exports = {
 	slash: "both",
 	testOnly: true,
-	name: "clear",
-	aliases: ["cl"],
+	name: "remove",
+	aliases: ["rm"],
 	category: "Music",
-	description: "Clears the song queue and reset the player",
-	callback: ({ message, channel, client, guild, member }) => {
+	description: "Remove song(s) the queue E.g. /remove positions: 4 7 8",
+	minArgs: 1,
+	expectedArgs: "<positions>",
+	callback: ({ message, channel, text, guild, member }) => {
+		const positions = text;
 		let guildMember;
-		let user;
 		let voiceChannel;
 		let textChannel;
 
 		if (message) {
 			const guildInfo = message.channel.guild;
 			guildMember = guildInfo.members.cache.find((user) => user.id === message.author.id);
-			user = message.author;
 			voiceChannel = guildMember.voice.channel;
 			textChannel = message.channel;
 		} else {
 			guildMember = guild.members.cache.find((user) => user.id === member.user.id);
-			user = new Discord.User(client, guildMember.user);
 			voiceChannel = guildMember.voice.channel;
 			textChannel = channel;
 		}
@@ -34,7 +33,11 @@ module.exports = {
 			return `You need to be in the same voice channel <#${musicPlayer.connection.packets.state.channel_id}> as <@${client.user.id}> to use this command!`;
 		}
 
-		let response = musicPlayer.clearQueue();
+		const response = musicPlayer.remove(positions, guildMember, textChannel);
+
+		// if (message) {
+		// 	message.reply(response);
+		// }
 
 		return response;
 	},

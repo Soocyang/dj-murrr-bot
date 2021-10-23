@@ -569,7 +569,12 @@ class MusicService {
 			this.play(textChannel)
 			// Set isPlaying true
 			this.isPlaying = true
-			console.log('Starting Player...')
+
+			console.log(
+				`Starting Player in ${guildMember.guild.name} at ${new Date(
+					Date.now()
+				).toLocaleString()}`
+			)
 			return embed
 		} else {
 			return embed
@@ -628,7 +633,11 @@ class MusicService {
 			this.play(textChannel)
 			// Set isPlaying true
 			this.isPlaying = true
-			console.log('Starting Player...')
+			console.log(
+				`Starting Player in ${guildMember.guild.name} at ${new Date(
+					Date.now()
+				).toLocaleString()}`
+			)
 			return 'STARTING_PLAYER'
 		}
 	}

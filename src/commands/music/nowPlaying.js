@@ -1,4 +1,4 @@
-const bot = require("../index.js");
+const bot = require("../../index.js");
 
 module.exports = {
 	slash: "both",

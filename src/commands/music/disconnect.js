@@ -1,14 +1,14 @@
 const Discord = require("discord.js");
-const bot = require("../index.js");
+const bot = require("../../index.js");
 const musicPlayer = bot.musicPlayer;
 
 module.exports = {
 	slash: "both",
 	testOnly: true,
-	name: "shuffle",
-	aliases: ['sf'],
+	name: "disconnect",
+	aliases: ["dis", "leave"],
 	category: "Music",
-	description: "Shuffles current song queue",
+	description: "Disconnect from the voice channel and reset player queue.",
 	callback: ({ message, channel, client, guild, member }) => {
 		let guildMember;
 		let user;
@@ -33,12 +33,12 @@ module.exports = {
 		if (voiceChannel.id !== musicPlayer.connection.packets.state.channel_id) {
 			return `You need to be in the same voice channel <#${musicPlayer.connection.packets.state.channel_id}> as <@${client.user.id}> to use this command!`;
 		}
-		let response = musicPlayer.shuffleQueue();
+		const res = musicPlayer.disconnect();
 
 		// if (message) {
-		// 	message.reply(response);
+		// 	message.reply("**📤 Player Disconnected**");
 		// }
 
-		return response;
+		return res;
 	},
 };

@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const bot = require("../index.js");
+const bot = require("../../index.js");
 const musicPlayer = bot.musicPlayer;
 
 module.exports = {

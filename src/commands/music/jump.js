@@ -1,14 +1,17 @@
-const bot = require("../index.js");
+const bot = require("../../index.js");
 const musicPlayer = bot.musicPlayer;
 
 module.exports = {
 	slash: "both",
 	testOnly: true,
-	name: "loopqueue",
-	aliases: ['lq'],
+	name: "jump",
+	aliases: ['j'],
 	category: "Music",
-	description: "Toggle loop for current song queue",
-	callback: ({ message, channel, client, guild, member }) => {
+	description: "Jumps to a specific song in the song queue",
+	minArgs: 1,
+	expectedArgs: "<position>",
+	callback: ({ message, channel, client, args, guild, member }) => {
+		const [input] = args;
 		let guildMember;
 		let voiceChannel;
 		let textChannel;
@@ -30,7 +33,7 @@ module.exports = {
 			return `You need to be in the same voice channel <#${musicPlayer.connection.packets.state.channel_id}> as <@${client.user.id}> to use this command!`;
 		}
 
-		let response = musicPlayer.loopqueue();
+		let response = musicPlayer.jump(textChannel, input);
 
 		// if (message) {
 		// 	message.reply(response);

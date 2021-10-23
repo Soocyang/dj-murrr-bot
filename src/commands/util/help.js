@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const { version } = require("../../package.json");
+const { version } = require("../../../package.json");
 //
 const getEmbed = async (client) => {
 	const user = await client.users.cache.find((user) => user.id === process.env.MY_USER_ID);
