@@ -6,7 +6,7 @@ module.exports = {
 	slash: "both",
 	testOnly: true,
 	name: "disconnect",
-	aliases: ["dis", "leave"],
+	aliases: ["dc", "leave"],
 	category: "Music",
 	description: "Disconnect from the voice channel and reset player queue.",
 	callback: ({ message, channel, client, guild, member }) => {

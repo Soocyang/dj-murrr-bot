@@ -85,7 +85,22 @@ const getEmbed = async (client) => {
 			},
 			{
 				name: "--disconnect",
-				value: "Disconnect from the voice channel and reset player queue. \n `alias: --dis/--leave`",
+				value: "Disconnect from the voice channel and reset player queue. \n `alias: --dc/--leave`",
+				inline: true,
+			},
+			{
+				name: "--getqueue",
+				value: "Show and play from saved queue/playlist \n `alias: --pq/--gq`",
+				inline: true,
+			},
+			{
+				name: "--savequeue",
+				value: "Save current the current song queue to a playlist that can play in future! \n `alias: --sq`",
+				inline: true,
+			},
+			{
+				name: "--deletequeue",
+				value: "Delete the saved queue/playlist \n `alias: --dq/--rq`",
 				inline: true,
 			}
 		)
