@@ -2,7 +2,7 @@
 
 A discord bot allows you to streaming music from youtube and listen together with your friends! Built with NodeJS & DiscordJS
 
-> This project is just for experiment and my own interests/project only. You may do your own customiszation for your own use!
+> This project is just for experiment and my own interests/project only. You may do your own customization for your own use!
 
 
 ## Pre-requisite
