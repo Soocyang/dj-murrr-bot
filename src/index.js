@@ -37,7 +37,8 @@ module.exports = {
 
 client.once('ready', async () => {
 	console.log('DJ Murrr is Online!')
-	client.user.setActivity(`${botPrefix}help`, { type: 'PLAYING' })
+	setPresence()
+	setInterval(() => setPresence(), 86400000)
 
 	new WOKCommands(client, {
 		commandsDir: path.join(__dirname, 'commands'),
@@ -53,5 +54,9 @@ client.once('ready', async () => {
 			},
 		])
 })
+
+function setPresence() {
+	client.user.setActivity(`${botPrefix}help`, { type: 'PLAYING' })
+}
 
 client.login(process.env.BOT_TOKEN)
