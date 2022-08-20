@@ -5,7 +5,7 @@ const getEmbed = async (client) => {
 	const user = await client.users.cache.find((user) => user.id === process.env.MY_USER_ID)
 	const embed = new Discord.MessageEmbed()
 		.setColor('#eaeaea')
-		.setAuthor(client.user.username, client.user.displayAvatarURL())
+		.setAuthor({ name: client.user.username, iconURL: client.user.displayAvatarURL() })
 		// .setThumbnail(client.user.displayAvatarURL())
 		.setThumbnail(
 			'https://media.discordapp.net/attachments/751684116109590670/891171749322973184/dj-cat.gif'
@@ -88,26 +88,27 @@ const getEmbed = async (client) => {
 				value: 'Disconnect from the voice channel and reset player queue. \n `alias: --dc/--leave`',
 				inline: true,
 			},
-			{
-				name: '--getqueue',
-				value: 'Show and play from saved queue/playlist \n `alias: --pq/--gq`',
-				inline: true,
-			},
-			{
-				name: '--savequeue',
-				value: 'Save current the current song queue to a playlist that can play in future! \n `alias: --sq`',
-				inline: true,
-			},
-			{
-				name: '--deletequeue',
-				value: 'Delete the saved queue/playlist \n `alias: --dq/--rq`',
-				inline: true,
-			}
+			// TODO: Pending better db options
+			// {
+			// 	name: '--getqueue',
+			// 	value: 'Show and play from saved queue/playlist \n `alias: --pq/--gq`',
+			// 	inline: true,
+			// },
+			// {
+			// 	name: '--savequeue',
+			// 	value: 'Save current the current song queue to a playlist that can play in future! \n `alias: --sq`',
+			// 	inline: true,
+			// },
+			// {
+			// 	name: '--deletequeue',
+			// 	value: 'Delete the saved queue/playlist \n `alias: --dq/--rq`',
+			// 	inline: true,
+			// }
 		)
 		// .setImage(
 		// 	"https://media.discordapp.net/attachments/846048517830606868/890878385641889822/ezgif.com-gif-maker.gif"
 		// )
-		.setFooter(`Version: v${version} | By Murrr`, `${user.displayAvatarURL()}`)
+		.setFooter({ text: `Version: v${version} | By Murrr`, iconURL: `${user.displayAvatarURL()}` })
 
 	return embed
 }

@@ -63,9 +63,10 @@ module.exports = {
 				.setColor('#eaeaea')
 				.setTitle(`**Added to queue!**`)
 				.setDescription(`**Saved Queue Title: \`${playlistInfo.title}\`**`)
-				.addField('Total tracks', `${playlistInfo.totalSongs}`, true)
-				.addField('Author', `<@${playlistInfo.author_id}>`, true)
-
+				.addFields(
+					{ name: 'Total tracks', value: `${playlistInfo.totalSongs}`, inline: true },
+					{ name: 'Author', value: `<@${playlistInfo.author_id}>`, inline: true }
+				)
 			replies.edit({ embeds: [embed] })
 
 			// Check is player playing
