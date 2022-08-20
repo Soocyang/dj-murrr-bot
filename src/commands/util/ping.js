@@ -41,10 +41,7 @@ module.exports = {
 					`⌛ Actual latency: \`${roundtripLatency}ms\`\n` +
 					`${RTCLatency !== '' ? `⏲ RTC latency: \`${RTCLatency}ms\`` : ''} `
 			)
-			.setFooter(
-				`${client.user.username} | ${moment(Date.now()).format('LLL')}`,
-				client.user.displayAvatarURL()
-			)
+			.setFooter({ text: `${client.user.username} | ${moment(Date.now()).format('LLL')}`, iconURL: client.user.displayAvatarURL() })
 
 		interaction ? interaction.editReply({ embeds: [embed] }) : sent.edit({ embeds: [embed] })
 	},

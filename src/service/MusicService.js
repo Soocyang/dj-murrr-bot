@@ -206,9 +206,11 @@ class MusicService {
 			.setTitle('🎵 Now Playing')
 			.setDescription(`**[${currentTrack.title}](${currentTrack.url})**`)
 			.setThumbnail(currentTrack.thumbail)
-			.addField('Song duration', `⌚ ${currentTrack.duration}`, true)
-			.addField('Channel', `🎤 ${currentTrack.author}`, true)
-			.setFooter(`Requested by ${currentTrack.username}`, `${currentTrack.userpic}`)
+			.addFields(
+				{ name: 'Song duration', value: `⌚ ${currentTrack.duration}`, inline: true },
+				{ name: 'Channel', value: `🎤 ${currentTrack.author}`, inline: true }
+			)
+			.setFooter({ text: `Requested by ${currentTrack.username}`, iconURL: `${currentTrack.userpic}` })
 		return embed
 	}
 
@@ -312,15 +314,15 @@ class MusicService {
 			.setColor(randomColor())
 			.setTitle(`💽 Song Queue for ${guildInfo.name}`)
 			.setDescription(tracksDescription)
-			.addField(
-				`⠀`,
-				`**Total songs \`${
+			.addFields({
+				name: `⠀`,
+				value: `**Total songs \`${
 					this.songQueue.length
 				}\` | Total length \`${totalDurationString}\` ${this.loopQueueFlag ? '| 🔁' : ''} ${
 					this.loopFlag ? '| 🔂' : ''
 				}**`
-			)
-			.setFooter(`Showing Page 1/${this.queueListing.length}`, guildInfo.iconURL())
+			})
+			.setFooter({ text: `Showing Page 1/${this.queueListing.length}`, iconUrl: guildInfo.iconURL() })
 
 		return embed
 	}
@@ -486,10 +488,10 @@ class MusicService {
 
 		const embed = new Discord.MessageEmbed()
 			.setColor(randomColor())
-			.setAuthor(
-				`Removed ${tracksToRemove.length} song(s) from the queue.`,
-				guildMember.user.avatarURL()
-			)
+			.setAuthor({
+				name: `Removed ${tracksToRemove.length} song(s) from the queue.`,
+				iconURL: guildMember.user.avatarURL()
+			})
 			.setDescription(embedDesc)
 		return embed
 	}
@@ -552,16 +554,18 @@ class MusicService {
 			.setTitle(`📥 Queued Playlist`)
 			.setDescription(`**[${playList.title}](${playList.url})**`)
 			.setThumbnail(playList.thumbnail)
-			.addField('Total tracks', `${playList.size}`, true)
-			.addField('Author', `${playList.author.name}`, true)
-			.addField('More info', `${alertInfo}`, false)
-			.setFooter(
-				`Requested by ${guildMember.nickname || ''}(${guildMember.user.username})`,
-				`${
+			.addFields(
+				{ name: 'Total tracks', value: `${playList.size}`, inline: true },
+				{ name: 'Author', value: `${playList.author.name}`, inline: true },
+				{ name: 'More info', value: `${alertInfo}`, inline: false }
+			)
+			.setFooter({
+				text: `Requested by ${guildMember.nickname || ''}(${guildMember.user.username})`,
+				iconURL: `${
 					guildMember.user.avatarURL() ||
 					`https://cdn.discordapp.com/embed/avatars/${Math.floor(Math.random() * 6)}.png`
 				}`
-			)
+			})
 
 		if (!this.isPlaying) {
 			this.currentTrackIndex += 1
@@ -620,11 +624,13 @@ class MusicService {
 			//if Yes reply song added to the queue
 			const embed = new Discord.MessageEmbed()
 				.setColor(randomColor())
-				.setAuthor('Song added to the queue', song.userpic)
+				.setAuthor({ name: 'Song added to the queue', iconURL: song.userpic })
 				.setDescription(`**[${song.title}](${song.url})**`)
 				.setThumbnail(song.thumbail)
-				.addField('Song duration', `⌚ ${song.duration}`, true)
-				.addField('Channel', `🎤 ${song.author}`, true)
+				.addFields(
+					{ name: 'Song duration', value: `⌚ ${song.duration}`, inline: true },
+					{ name: 'Channel', value: `🎤 ${song.author}`, inline: true }
+				)
 
 			return embed
 		} else {
@@ -664,10 +670,10 @@ class MusicService {
 			const queuePage = this.getQueueByPage(this.queuePage)
 			const editedEmbed = new Discord.MessageEmbed(retrievedEmbed)
 				.setDescription(queuePage)
-				.setFooter(
-					`Showing Page ${this.queuePage + 1}/${this.queueListing.length}`,
-					reaction.message.guild.iconURL()
-				)
+				.setFooter({
+					text: `Showing Page ${this.queuePage + 1}/${this.queueListing.length}`,
+					iconUrl: reaction.message.guild.iconURL()
+				})
 			reaction.message.edit({ embeds: [editedEmbed] })
 		}
 	}

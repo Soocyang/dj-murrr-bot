@@ -6,10 +6,10 @@ const mongoose = require('mongoose')
 
 const MusicService = require('./service/MusicService.js')
 
-mongoose.connect(process.env.MONGO_URI, { keepAlive: true, keepAliveInitialDelay: 300000 }).then(
-	() => console.log('Connected to DB!'),
-	(err) => console.log(err)
-)
+// mongoose.connect(process.env.MONGO_URI, { keepAlive: true, keepAliveInitialDelay: 300000 }).then(
+// 	() => console.log('Connected to DB!'),
+// 	(err) => console.log(err)
+// )
 
 const client = new Client({
 	// intents
@@ -44,9 +44,9 @@ client.once('ready', async () => {
 		commandsDir: path.join(__dirname, 'commands'),
 		testServers: [process.env.GUILD_ID, process.env.GUILD_ID_2],
 		showWarns: false,
+		botOwners: [process.env.MY_USER_ID],
 	})
 		.setDefaultPrefix(botPrefix)
-		.setBotOwner(process.env.MY_USER_ID)
 		.setCategorySettings([
 			{
 				name: 'Music',
